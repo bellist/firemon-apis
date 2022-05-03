@@ -215,12 +215,6 @@ policyplan.run_pca(ticket_id: str, control_types: str, enable_risk_sa: str)
 * __control_types__: Control types as string array. Options: ALLOWED_SERVICES, CHANGE_WINDOW_VIOLATION, DEVICE_ACCESS_ANALYSIS, DEVICE_PROPERTY, DEVICE_STATUS, NETWORK_ACCESS_ANALYSIS, REGEX, REGEX_MULITPATTERN, RULE_SEARCH, RULE_USAGE, SERVICE_RISK_ANALYSIS, ZONE_MATRIX, ZONE_BASED_RULE_SEARCH
 * __enable_risk_sa__: true or false
 
-__Retrieving PCA from a Policy Planner Ticket__
-```
-policyplan.retrieve_pca(ticket_id: str)
-```
-* __ticket_id__: ID of ticket to retrieve PCA from.
-
 __Adding Attachment to a Policy Planner Ticket__
 ```
 policyplan.add_attachment(ticket_id: str, file_name: str, f, description: str):

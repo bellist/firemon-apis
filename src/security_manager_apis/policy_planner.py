@@ -138,7 +138,7 @@ class PolicyPlannerApis():
             print("Exception occurred while add requirement to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
-    def run_pca(self, ticket_id: str, control_types: str, enable_risk_sa: str) -> list:
+    def do_pca(self, ticket_id: str, control_types: str, enable_risk_sa: str) -> list:
         """
         :param ticket_id: Ticket ID
         :param control_types: Control types as string array. Options:
@@ -155,7 +155,6 @@ class PolicyPlannerApis():
         try:
             resp = requests.post(url=pp_tkt_url,
                                 headers=self.headers, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, " - ", resp.reason, "\n>>>API Response End>>>")
             return resp.status_code, resp.reason
         except requests.exceptions.HTTPError as e:
             print(
@@ -172,12 +171,24 @@ class PolicyPlannerApis():
         try:
             resp = requests.get(url=pp_tkt_url,
                                 headers=self.headers, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.json(), "\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print(
                 "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
+
+    def run_pca(self, ticket_id: str, control_types: str, enable_risk_sa: str) -> dict:
+        """
+        :param ticket_id: Ticket ID
+        :param control_types: Control types as string array. Options:
+        ALLOWED_SERVICES, CHANGE_WINDOW_VIOLATION, DEVICE_ACCESS_ANALYSIS, DEVICE_PROPERTY, DEVICE_STATUS,
+        NETWORK_ACCESS_ANALYSIS, REGEX, REGEX_MULITPATTERN, RULE_SEARCH, RULE_USAGE, SERVICE_RISK_ANALYSIS,
+        ZONE_MATRIX, ZONE_BASED_RULE_SEARCH
+        :param enable_risk_sa: true or false
+        :return: JSON response of PCA
+        """
+        self.do_pca(ticket_id, control_types, enable_risk_sa)
+        return self.retrieve_pca(ticket_id)
 
     def parse_controls(self, controls: str) -> str:
         """
