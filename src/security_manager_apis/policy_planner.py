@@ -32,7 +32,6 @@ class PolicyPlannerApis():
         try:
             resp = requests.post(url=pp_tkt_url,
                                  headers=self.headers, json=request_body, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.json(), "\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while creating policy planner ticket with workflow id '{0}'\n Exception : {1}".
@@ -49,10 +48,9 @@ class PolicyPlannerApis():
         try:
             resp = requests.get(url=pp_tkt_url,
                                  headers=self.headers, params=parameters, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.json(), "\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
-            print("Exception occurred while creating policy planner ticket with workflow id '{0}'\n Exception : {1}".
+            print("Exception occurred while querying policy planner tickets with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
     
     def update_pp_ticket(self, ticket_id: str, request_body: dict) -> str:
@@ -66,7 +64,6 @@ class PolicyPlannerApis():
         try:
             resp = requests.put(url=pp_tkt_url,
                                  headers=self.headers, json=request_body, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code," - ", resp.reason , "\n>>>API Response End>>>")
             return str(resp.status_code)
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while creating policy planner ticket with workflow id '{0}'\n Exception : {1}".
@@ -82,7 +79,6 @@ class PolicyPlannerApis():
         try:
             resp = requests.get(url=pp_tkt_url,
                                  headers=self.headers, verify=self.verify_ssl)
-            #print(">>>API Response Start>>>\n", resp.json(), "\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while retrieving policy planner ticket with workflow id '{0}'\n Exception : {1}".
@@ -98,7 +94,6 @@ class PolicyPlannerApis():
         try:
             resp = requests.put(url=pp_tkt_url,
                                  headers=self.headers, data=user_id, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code,"\n>>>API Response End>>>")
             return str(resp.status_code)
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while assigning policy planner ticket with workflow id '{0}'\n Exception : {1}".
@@ -112,10 +107,9 @@ class PolicyPlannerApis():
         try:
             resp = requests.post(url=pp_tkt_url,
                                  headers=self.headers, json=req_json, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code," - ", resp.reason ,  "\n>>>API Response End>>>")
             return str(resp.status_code)
         except requests.exceptions.HTTPError as e:
-            print("Exception occurred while add requirement to policy planner ticket with workflow id '{0}'\n Exception : {1}".
+            print("Exception occurred while adding a requirement to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
     def complete_task_pp_ticket(self, ticket_id: str, button_action: str) -> list:
@@ -132,10 +126,9 @@ class PolicyPlannerApis():
         try:
             resp = requests.put(url=pp_tkt_url,
                                  headers=self.headers, json={}, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code," - ", resp.reason ,  "\n>>>API Response End>>>")
             return resp.status_code, resp.reason
         except requests.exceptions.HTTPError as e:
-            print("Exception occurred while add requirement to policy planner ticket with workflow id '{0}'\n Exception : {1}".
+            print("Exception occurred while completing task on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
     def do_pca(self, ticket_id: str, control_types: str, enable_risk_sa: str) -> list:
@@ -209,11 +202,10 @@ class PolicyPlannerApis():
         new_headers['Content-Type'] = 'multipart/form-data'
         try:
             resp = requests.post(url=pp_tkt_url, headers=new_headers, files={file_name: f}, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, '-', resp.reason, "\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print(
-                "Exception occurred while creating policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                "Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
     def post_attachment(self, ticket_id: str, attachment_json: dict) -> str:
@@ -223,10 +215,9 @@ class PolicyPlannerApis():
         try:
             resp = requests.put(url=pp_tkt_url,
                                  headers=new_headers, json=attachment_json, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, '-', resp.reason, "\n>>>API Response End>>>")
             return str(resp.json()['attachments'][0]['id'])
         except requests.exceptions.HTTPError as e:
-            print("Exception occurred while creating policy planner ticket with workflow id '{0}'\n Exception : {1}".
+            print("Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
     def update_attachment_desc(self, ticket_id: str, description: str, attachment_id: str) -> list:
@@ -237,10 +228,9 @@ class PolicyPlannerApis():
         try:
             resp = requests.put(url=pp_tkt_url,
                                 headers=self.headers, json=payload, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, "\n>>>API Response End>>>")
             return resp.status_code, resp.reason
         except requests.exceptions.HTTPError as e:
-            print("Exception occurred while creating policy planner ticket with workflow id '{0}'\n Exception : {1}".
+            print("Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
     def add_attachment(self, ticket_id: str, file_name: str, f, description: str):
@@ -265,7 +255,7 @@ class PolicyPlannerApis():
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print(
-                "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                "Exception occurred while fetching requirements on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
     def del_all_reqs(self, ticket_id: str) -> dict:
@@ -285,10 +275,9 @@ class PolicyPlannerApis():
             try:
                 resp = requests.delete(url=pp_tkt_url,
                                     headers=self.headers, verify=self.verify_ssl)
-                print(">>>API Response Start>>>\n", resp.status_code, "\n>>>API Response End>>>")
             except requests.exceptions.HTTPError as e:
                 print(
-                    "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                    "Exception occurred while deleting requirements on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                         format(workflow_id, e.response.text))
             reqs[r['id']] = resp.status_code
         return reqs
@@ -299,11 +288,10 @@ class PolicyPlannerApis():
         try:
             resp = requests.put(url=pp_tkt_url,
                                  headers=self.headers, json={}, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, " - ", resp.reason, "\n>>>API Response End>>>")
             return resp.status_code, resp.reason
         except requests.exceptions.HTTPError as e:
             print(
-                "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                "Exception occurred while approving requirement on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
     def add_comment(self, ticket_id: str, comment: str) -> list:
@@ -314,11 +302,10 @@ class PolicyPlannerApis():
         try:
             resp = requests.post(url=pp_tkt_url,
                                 headers=self.headers, json=comment_json,verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, "\n>>>API Response End>>>")
             return resp.status_code, resp.reason
         except requests.exceptions.HTTPError as e:
             print(
-                "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                "Exception occurred while adding comment on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
     def get_comments(self, ticket_id: str) -> dict:
@@ -326,11 +313,10 @@ class PolicyPlannerApis():
         try:
             resp = requests.get(url=pp_tkt_url,
                                 headers=self.headers,verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.json(), "\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print(
-                "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                "Exception occurred while fetching comments on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
     def del_comment(self, ticket_id: str, comment_id: str) -> list:
@@ -338,11 +324,10 @@ class PolicyPlannerApis():
         try:
             resp = requests.delete(url=pp_tkt_url,
                                 headers=self.headers,verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n", resp.status_code, " ", resp.reason, "\n>>>API Response End>>>")
             return resp.status_code, resp.reason
         except requests.exceptions.HTTPError as e:
             print(
-                "Exception occurred while running PCA on policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                "Exception occurred while deleting comment on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
     
     def get_workflow_packet_task_id(self, ticket_json: dict) -> str:
