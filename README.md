@@ -221,14 +221,29 @@ policyplan.add_attachment(ticket_id: str, file_name: str, f, description: str):
 ```
 * __ticket_id__: ID of ticket to add attachment to.
 * __filename__: File name of attachment.
-* __f__: Binary of file.
-* __description__: Binary of file.
+* __f__: file stream.
+* __description__: Description of file.
 
 _Adding Attachment Code Example:_
 ```
 file_name = "test_file.txt"
-with open(file_name, 'rb') as f:
+with open(file_name) as f:
     policyplan.add_attachment('38', file_name, f, 'test upload')
+```
+
+__Uploading Requirements via CSV to Policy Planner Ticket__
+```
+policyplan.csv_req_upload(ticket_id: str, file_name: str, f):
+```
+* __ticket_id__: ID of ticket to add attachment to.
+* __filename__: File name of attachment.
+* __f__: file stream.
+
+_Uploading Requirements via CSV Code Example:_
+```
+file_name = "test_req.csv"
+with open(file_name) as f:
+    policyplan.csv_req_upload('1', file_name, f)
 ```
 
 __Retrieving Requirements from a Policy Planner Ticket__

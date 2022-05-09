@@ -208,36 +208,43 @@ class PolicyPlannerApis():
                 "Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
-    def post_attachment(self, ticket_id: str, attachment_json: dict) -> str:
+    def post_attachment(self, ticket_id: str, attachment_json: dict) -> dict:
         new_headers = self.headers
         new_headers.pop('Content-Type', None)
         pp_tkt_url = self.parser.get('REST', 'post_att_pp_tkt_api').format(self.host, self.domain_id, self.workflow_id, ticket_id)
         try:
             resp = requests.put(url=pp_tkt_url,
                                  headers=new_headers, json=attachment_json, verify=self.verify_ssl)
-            return str(resp.json()['attachments'][0]['id'])
-        except requests.exceptions.HTTPError as e:
-            print("Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
-                  format(workflow_id, e.response.text))
-
-    def update_attachment_desc(self, ticket_id: str, description: str, attachment_id: str) -> list:
-        pp_tkt_url = self.parser.get('REST', 'update_att_pp_tkt_api').format(self.host, self.domain_id, self.workflow_id, ticket_id, attachment_id)
-        payload = {
-            'description': description
-        }
-        try:
-            resp = requests.put(url=pp_tkt_url,
-                                headers=self.headers, json=payload, verify=self.verify_ssl)
-            return resp.status_code, resp.reason
+            return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
     def add_attachment(self, ticket_id: str, file_name: str, f, description: str):
         attachment_staged = self.stage_attachment(file_name, f)
-        attachment_id = self.post_attachment(ticket_id, attachment_staged)
-        update = self.update_attachment_desc(ticket_id, description, attachment_id)
-        return update
+        attachment_staged['attachments'][0]['description'] = description
+        attachment_posted = self.post_attachment(ticket_id, attachment_staged)
+        return attachment_posted
+
+    def csv_req_upload(self, ticket_id: str, file_name: str, f):
+        pp_tkt_url = self.parser.get('REST', 'parse_csv_pp_tkt_api').format(self.host, self.domain_id, self.workflow_id)
+        self.headers['Content-Type'] = 'multipart/form-data'
+        try:
+            resp = requests.post(url=pp_tkt_url, headers=self.headers, files={file_name: f}, verify=self.verify_ssl)
+        except requests.exceptions.HTTPError as e:
+            print(
+                "Exception occurred while adding attachment to policy planner ticket with workflow id '{0}'\n Exception : {1}".
+                    format(workflow_id, e.response.text))
+        requirements_parsed = resp.json()
+        requirements_formatted = {'requirements': []}
+        for r in requirements_parsed['policyPlanRequirementErrorDTOs']:
+            requirements_formatted['requirements'].append(r['policyPlanRequirementDTO'])
+        self.headers['Content-Type'] = 'application/json; charset=utf-8'
+        post_req = self.add_req_pp_ticket(ticket_id, requirements_formatted)
+        f.seek(0)
+        self.headers['Content-Type'] = 'multipart/form-data'
+        self.add_attachment(ticket_id, file_name, f, 'Attached original CSV file')
+        return post_req
 
     def get_reqs(self, ticket_id: str) -> dict:
         """
