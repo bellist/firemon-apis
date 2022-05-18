@@ -301,14 +301,84 @@ securitymanager = security_manager.SecurityManagerApis(host: str, username: str,
 
 __Get List of Devices in Security Manager__
 ```
-security_manager.get_devices()
+securitymanager.get_devices()
 ```
 
 __Manual Device Retrieval__
 ```
-security_manager.manual_device_retrieval(device_id: str)
+securitymanager.manual_device_retrieval(device_id: str)
 ```
 * __device_id__: ID of device to retrieve.
+
+__Adding a Supplemental Route__
+```
+securitymanager.add_supp_route(device_id: str, supplemental_route: dict)
+```
+* __device_id__: ID of device to retrieve.
+* __supplemental_route__: JSON of supplemental route.
+
+_Supplemental Route JSON Example_
+```
+{
+    "destination": "10.0.0.25",
+    "deviceId": "2",
+    "drop": false,
+    "gateway": "10.0.0.26",
+    "interfaceName": "port1",
+    "metric": 3
+}
+```
+
+__Bulk Adding Supplemental Route via Text File__
+```
+securitymanager.bulk_add_supp_route(f)
+```
+* __f__: File stream.
+
+_Supplemental Route Text File Example_
+```
+deviceId,interfaceName,destination,gateway,virtualRouter,nextVirtualRouter,metric,drop
+2,port1,10.0.0.25,10.0.0.26,,,4,true
+2,,10.0.0.25,10.0.0.26,Default,Default,4,true
+```
+Note: The first line of this file will not be processed, it serves as an informational header.
+
+_Supplemental Route Bulk Upload Code Example_
+```
+with open('supp_route.txt') as f:
+    securitymanager.bulk_add_supp_route(f)
+f.close()
+```
+
+__Security Manager SIQL Query__
+```
+securitymanager.siql_query(query_type: str, query: str, page_size: int)
+```
+* __query_type__: What type of object to query. Options: secrule, policy, serviceobj, networkobj
+* __device_id__: Device ID
+* __page_size__: Number of results to return
+
+__Search for Device Zones__
+```
+securitymanager.zone_search(device_id: str, page_size: int)
+```
+* __device_id__: Device ID
+* __page_size__: Number of results to return
+
+__Retrieve Firewall Object__
+```
+securitymanager.get_fw_obj(obj_type: str, device_id: str, match_id: str)
+```
+* __obj_type__: Type of firewall object. Options: NETWORK, SERVICE, ZONE, APP, PROFILE, SCHEDULE, URL_MATCHER, USER
+* __device_id__: Device ID
+* __match_id__: Match ID of targeted object
+
+__Retrieve Device Object__
+```
+securitymanager.get_device_obj(device_id: str)
+```
+* __device_id__: Device ID
+
 
 ## Policy Optimizer Usage
 __Initializing a Policy Optimizer Class__

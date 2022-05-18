@@ -28,7 +28,6 @@ class OrchestrationApis():
         try:
             resp=requests.post(url=rulerec_url,
                 headers=self.headers,params=params, json=req_json, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n",resp.json(),"\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while getting rule recommendation \n Exception : {0}".
@@ -41,7 +40,6 @@ class OrchestrationApis():
         try:
             resp=requests.post(url=pca_url,
                 headers=self.headers, json=req_json, verify=self.verify_ssl)
-            print(">>>API Response Start>>>\n",resp.json(),"\n>>>API Response End>>>")
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while getting pre change assessment \n Exception : {0}".
