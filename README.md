@@ -379,20 +379,98 @@ securitymanager.get_device_obj(device_id: str)
 ```
 * __device_id__: Device ID
 
+__Retrieve Rule Documentation__
+```
+securitymanager.get_rule_doc(device_id: str, rule_id: str)
+```
+* __device_id__: Device ID
+* __rule_id__: Rule ID
+
+__Update Rule Documentation__
+```
+securitymanager.update_rule_doc(device_id: str, rule_doc: dict)
+```
+* __device_id__: Device ID
+* __rule_doc__: Rule documentation JSON
+
+_Rule Doc JSON Example:_
+```
+{
+   "ruleId":"16959bc0-b9f7-436b-9851-aac6f3d98963",
+   "deviceId":3,
+   "props":[
+      {
+         "ruleId":"16959bc0-b9f7-436b-9851-aac6f3d98963",
+         "ruleCustomPropertyDefinition":{
+            "id":1,
+            "customPropertyDefinition":{
+               "id":1,
+               "name":"Business Justification",
+               "key":"business_justification",
+               "type":"STRING_ARRAY",
+               "filterable":true,
+               "inheritFromMgmtStation":false
+            },
+            "name":"Business Justification",
+            "key":"business_justification",
+            "type":"STRING_ARRAY"
+         },
+         "customProperty":{
+            "id":1,
+            "name":"Business Justification",
+            "key":"business_justification",
+            "type":"STRING_ARRAY",
+            "filterable":true,
+            "inheritFromMgmtStation":false
+         },
+         "stringarray": ["test update"]
+      }
+   ]
+}
+```
 
 ## Policy Optimizer Usage
 __Initializing a Policy Optimizer Class__
 ```
 from security_manager_apis import policy_optimizer
 
-policyoptimizer = policy_optimizer.PolicyOptimizerApis(host: str, username: str, password: str, verify_ssl: bool, domain_id: str, suppress_ssl_warning: bool)
+policyoptimizer = policy_optimizer.PolicyOptimizerApis(host: str, username: str, password: str, verify_ssl: bool, domain_id: str, workflow_name: str, suppress_ssl_warning: bool)
 ```
 * __host__: Pointing to your FireMon server.
 * __username__: The username that would be used to create the API connection to FireMon.
 * __password__: The API password for the given user.
 * __verify_ssl__: Enabled by default. If you are running demo/test environment, good chance you'll need to set this one to `False`.
 * __domain_id__: The Domain ID for the targeted workflow.
+* __workflow_name__: The name of the targeted workflow.
 * __suppress_ssl_warning__: Set to False by default. Will supress any SSL warnings when set to `True`.
+
+__Create a Policy Optimizer Ticket__
+```
+policyoptimizer.create_pp_ticket(request_body: dict)
+```
+* __request_body__: JSON of ticket to be created.
+
+_Request JSON Example:_
+```
+{
+  "deviceId": 1,
+  "policyId": "62c7344a-31b9-40a6-8e7e-0c9cd6407fbe",
+  "ruleId": "16959bc0-b9f7-436b-9851-aac6f3d98963"
+}
+```
+
+__Retrieve Policy Optimizer Ticket JSON__
+```
+policyoptimizer.get_po_ticket(ticket_id: str)
+```
+* __ticket_id__: ID of ticket to be retrieved.
+
+__Assign Policy Optimizer Ticket to User__
+```
+policyoptimizer.assign_po_ticket(ticket_id: str, user_id: str)
+```
+* __ticket_id__: ID of ticket to assign user to.
+* __user_id__: ID of User to be assigned.
 
 ## Orchestration API Usage
 __Initializing an Orchestration API Class__

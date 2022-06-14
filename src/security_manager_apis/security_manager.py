@@ -22,19 +22,19 @@ class SecurityManagerApis():
         self.domain_id = domain_id
 
     def get_devices(self) -> dict:
-        pp_tkt_url = self.parser.get('REST', 'get_dev_sm_api').format(self.host, self.domain_id)
+        sm_tkt_url = self.parser.get('REST', 'get_dev_sm_api').format(self.host, self.domain_id)
         try:
-            resp = requests.get(url=pp_tkt_url, headers=self.headers, verify=self.verify_ssl)
+            resp = requests.get(url=sm_tkt_url, headers=self.headers, verify=self.verify_ssl)
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while retrieving devices\n Exception : {0}".
                   format(e.response.text))
 
     def manual_device_retrieval(self, device_id: str) -> str:
-        pp_tkt_url = self.parser.get('REST', 'man_ret_dev_sm_api').format(self.host, self.domain_id, device_id)
+        sm_tkt_url = self.parser.get('REST', 'man_ret_dev_sm_api').format(self.host, self.domain_id, device_id)
         payload = {}
         try:
-            resp = requests.post(url=pp_tkt_url, headers=self.headers, json=payload, verify=self.verify_ssl)
+            resp = requests.post(url=sm_tkt_url, headers=self.headers, json=payload, verify=self.verify_ssl)
             return resp.status_code
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while while retrieving Device ID '{0}'\n Exception : {1}".
@@ -48,10 +48,10 @@ class SecurityManagerApis():
         :param page_size: Number of results to return
         :return: JSON of results
         """
-        pp_tkt_url = self.parser.get('REST', 'siql_query_sm_api').format(self.host, query_type)
+        sm_tkt_url = self.parser.get('REST', 'siql_query_sm_api').format(self.host, query_type)
         parameters = {'q': query, 'pageSize': page_size }
         try:
-            resp = requests.get(url=pp_tkt_url, headers=self.headers, params=parameters, verify=self.verify_ssl)
+            resp = requests.get(url=sm_tkt_url, headers=self.headers, params=parameters, verify=self.verify_ssl)
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while while running query\n Exception : {0}".
@@ -64,10 +64,10 @@ class SecurityManagerApis():
         :param page_size: Number of results to return
         :return: JSON of results
         """
-        pp_tkt_url = self.parser.get('REST', 'zone_search_sm_api').format(self.host, self.domain_id, device_id)
+        sm_tkt_url = self.parser.get('REST', 'zone_search_sm_api').format(self.host, self.domain_id, device_id)
         parameters = {'pageSize': page_size}
         try:
-            resp = requests.get(url=pp_tkt_url, headers=self.headers, params=parameters, verify=self.verify_ssl)
+            resp = requests.get(url=sm_tkt_url, headers=self.headers, params=parameters, verify=self.verify_ssl)
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while while running query\n Exception : {0}".
@@ -81,9 +81,9 @@ class SecurityManagerApis():
         :param match_id: Match ID of targeted object
         :return: Firewall object JSON
         """
-        pp_tkt_url = self.parser.get('REST', 'fw_obj_sm_api').format(self.host, obj_type, device_id, match_id)
+        sm_tkt_url = self.parser.get('REST', 'fw_obj_sm_api').format(self.host, obj_type, device_id, match_id)
         try:
-            resp = requests.get(url=pp_tkt_url, headers=self.headers, verify=self.verify_ssl)
+            resp = requests.get(url=sm_tkt_url, headers=self.headers, verify=self.verify_ssl)
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while while retrieving firewall object JSON \n Exception : {0}".
@@ -95,9 +95,9 @@ class SecurityManagerApis():
         :param devide_id: Device ID
         :return: Device object JSON
         """
-        pp_tkt_url = self.parser.get('REST', 'dev_obj_sm_api').format(self.host, self.domain_id, device_id)
+        sm_tkt_url = self.parser.get('REST', 'dev_obj_sm_api').format(self.host, self.domain_id, device_id)
         try:
-            resp = requests.get(url=pp_tkt_url, headers=self.headers, verify=self.verify_ssl)
+            resp = requests.get(url=sm_tkt_url, headers=self.headers, verify=self.verify_ssl)
             return resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while while retrieving device object JSON \n Exception : {0}".
@@ -111,12 +111,42 @@ class SecurityManagerApis():
         :return: List containing status code, reason, json
         """
         self.verify_route_json(supplemental_route)
-        pp_tkt_url = self.parser.get('REST', 'supp_route_sm_api').format(self.host, device_id)
+        sm_tkt_url = self.parser.get('REST', 'supp_route_sm_api').format(self.host, device_id)
         try:
-            resp = requests.post(url=pp_tkt_url, headers=self.headers, json=supplemental_route, verify=self.verify_ssl)
+            resp = requests.post(url=sm_tkt_url, headers=self.headers, json=supplemental_route, verify=self.verify_ssl)
             return resp.status_code, resp.reason, resp.json()
         except requests.exceptions.HTTPError as e:
             print("Exception occurred while adding supplemental Route to Device ID '{0}'\n Exception : {1}".
+                  format(device_id, e.response.text))
+
+    def get_rule_doc(self, device_id: str, rule_id: str) -> dict:
+        """
+        Function to retrieve rule documentation
+        :param device_id: ID of device
+        :param rule_id: ID of rule
+        :return: JSON response
+        """
+        sm_tkt_url = self.parser.get('REST', 'get_rule_doc').format(self.host, self.domain_id, device_id, rule_id)
+        try:
+            resp = requests.get(url=sm_tkt_url, headers=self.headers, verify=self.verify_ssl)
+            return resp.json()
+        except requests.exceptions.HTTPError as e:
+            print("Exception occurred while retrieving rule doc for Rule ID '{0}'\n Exception : {1}".
+                  format(rule_id, e.response.text))
+
+    def update_rule_doc(self, device_id: str, rule_doc: dict) -> str:
+        """
+        Function to add update rule documentation
+        :param device_id: ID of device
+        :param rule_id: ID of rule
+        :return: JSON response
+        """
+        pp_tkt_url = self.parser.get('REST', 'update_rule_doc').format(self.host, self.domain_id, device_id)
+        try:
+            resp = requests.put(url=pp_tkt_url, headers=self.headers, json=rule_doc, verify=self.verify_ssl)
+            return resp.status_code, resp.reason
+        except requests.exceptions.HTTPError as e:
+            print("Exception occurred while updating rule doc for Device ID '{0}'\n Exception : {1}".
                   format(device_id, e.response.text))
 
     def bulk_add_supp_route(self, f) -> int:
