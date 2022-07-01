@@ -285,6 +285,11 @@ policyplan.del_comment(ticket_id: str, comment_id: str)
 * __ticket_id__: ID of ticket to delete comment from.
 * __comment_id__: ID of comment to delete.
 
+__Ending a Policy Planner Session__
+```
+policyplan.logout()
+```
+
 ## Security Manager Usage
 __Initializing a Security Manager Class__
 ```
@@ -429,6 +434,12 @@ _Rule Doc JSON Example:_
 }
 ```
 
+__Ending a Security Manager Session__
+```
+securitymanager.logout()
+```
+
+
 ## Policy Optimizer Usage
 __Initializing a Policy Optimizer Class__
 ```
@@ -471,6 +482,77 @@ policyoptimizer.assign_po_ticket(ticket_id: str, user_id: str)
 ```
 * __ticket_id__: ID of ticket to assign user to.
 * __user_id__: ID of User to be assigned.
+
+
+__Complete a Policy Optimizer Ticket__
+```
+policyoptimizer.complete_po_ticket(ticket_id: str, decision: dict)
+```
+* __ticket_id__: ID of ticket to complete.
+* __decision__: JSON of decision to Certify/Decertify rule.
+
+_Certify JSON Example:_
+```
+{
+   "variables":{
+      "ruleDecision":"certify",
+      "certifyRemarks":"string",
+      "nextReviewDate":"2022-01-01T00:00:00-0500"
+   }
+}
+```
+
+_Decertify JSON Example:_
+```
+{
+   "variables":{
+      "ruleDecision":"decertify",
+      "ruleActions":"string",
+      "modifyRuleOptions":"string",
+      "moveToPosition": "string",
+      "removeOther": "string",
+      "disableRuleOptions":"string",
+      "removeRuleOptions":"string",
+      "decertifyRuleReason":"string"
+   }
+}
+```
+_Decertify JSON Structure:_
+* `ruleActions` Options:
+   * MODIFYRULE, which prompts a value for `modifyRuleOptions`:
+      * `removeObjects`, which prompts a value for `removeOther`
+      * `moveToRulePosition`, which prompts a value for `moveToPosition`
+      * `modifyRuleOptions`, which prompts a value for `other`
+   * DISABLERULE, which prompts a value for `disableRuleOptions`:
+      * `couldNotFindOwner`
+      * `accessNoLongerNeeded`
+      * `other`
+   * REMOVERULE, which prompts a value for `removeRuleOptions`:
+      * `accessNoLongerNeeded`
+      * `accessIsTooRisky`
+      * `other`
+
+__Cancel a Policy Optimizer Ticket__
+```
+policyoptimizer.cancel_po_ticket(ticket_id: str)
+```
+* __ticket_id__: ID of ticket to cancel.
+
+__Query Policy Optimizer Tickets__
+```
+policyoptimizer.siql_query_po_ticket(parameters: dict)
+```
+* __parameters__: Parameters of query.
+
+_Params Example:_
+```
+params = {'q': "review { workflow = 1 AND status ~ 'Review' }", 'pageSize': 20, 'domainId': 1, 'sortdir': 'asc'}
+```
+
+__Ending a Policy Optimizer Session__
+```
+policyoptimizer.logout()
+```
 
 ## Orchestration API Usage
 __Initializing an Orchestration API Class__

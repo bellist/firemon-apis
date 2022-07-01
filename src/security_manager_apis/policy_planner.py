@@ -375,6 +375,17 @@ class PolicyPlannerApis():
                 "Exception occurred while deleting comment on policy planner ticket with workflow id '{0}'\n Exception : {1}".
                     format(workflow_id, e.response.text))
 
+    def logout(self) -> list:
+        self.headers['Connection'] = 'Close'
+        pp_tkt_url = self.parser.get('REST', 'logout_api_url').format(self.host)
+        try:
+            resp = requests.post(url=pp_tkt_url, headers=self.headers, verify=self.verify_ssl)
+            return resp.status_code, resp.reason
+        except requests.exceptions.HTTPError as e:
+            print(
+                "Exception occurred while attempting to logout\n Exception : {0}".
+                    format(e.response.text))
+
     def get_workflow_packet_task_id(self, ticket_json: dict) -> str:
         """
         Retrieves workflowPacketTaskId value from current stage of provided ticket

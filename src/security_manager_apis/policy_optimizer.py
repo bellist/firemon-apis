@@ -72,6 +72,73 @@ class PolicyOptimizerApis():
             print("Exception occurred while creating Policy Optimizer ticket with workflow id '{0}'\n Exception : {1}".
                   format(workflow_id, e.response.text))
 
+    def complete_po_ticket(self, ticket_id: str, decision: dict) -> str:
+        """
+        Function to complete a Policy Optimizer ticket
+        :param ticket_id: ID of ticket
+        :param decision: Decision JSON
+        :return: Response code
+        """
+        ticket_json = self.get_po_ticket(ticket_id)
+        workflow_packet_task_id = self.get_workflow_packet_task_id(ticket_json)
+        workflow_task_id = self.get_workflow_task_id(ticket_json)
+        po_tkt_url = self.parser.get('REST', 'complete_po_ticket').format(self.host, self.domain_id,
+                                                                             self.workflow_id, workflow_task_id,
+                                                                             ticket_id, workflow_packet_task_id, 'complete')
+        try:
+            resp = requests.put(url=po_tkt_url,
+                                 headers=self.headers, json=decision, verify=self.verify_ssl)
+            return resp.status_code
+        except requests.exceptions.HTTPError as e:
+            print("Exception occurred while completing Policy Optimizer ticket with ticket id '{0}'\n Exception : {1}".
+                  format(ticket_id, e.response.text))
+
+    def cancel_po_ticket(self, ticket_id: str) -> str:
+        """
+        Function to cancel a Policy Optimizer ticket
+        :param ticket_id: ID of ticket
+        :return: Response code
+        """
+        ticket_json = self.get_po_ticket(ticket_id)
+        workflow_packet_task_id = self.get_workflow_packet_task_id(ticket_json)
+        workflow_task_id = self.get_workflow_task_id(ticket_json)
+        po_tkt_url = self.parser.get('REST', 'complete_po_ticket').format(self.host, self.domain_id,
+                                                                             self.workflow_id, workflow_task_id,
+                                                                             ticket_id, workflow_packet_task_id, 'cancelled')
+        try:
+            resp = requests.put(url=po_tkt_url,
+                                 headers=self.headers, json={}, verify=self.verify_ssl)
+            return resp.status_code
+        except requests.exceptions.HTTPError as e:
+            print("Exception occurred while cancelling Policy Optimizer ticket with ticket ID '{0}'\n Exception : {1}".
+                  format(ticket_id, e.response.text))
+
+    def siql_query_po_ticket(self, parameters: dict) -> str:
+        """
+        Function to query Policy Optimizer tickets
+        :param parameters: search parameters
+        :return: Response JSON
+        """
+        po_tkt_url = self.parser.get('REST', 'siql_query_po').format(self.host, self.domain_id)
+        try:
+            resp = requests.get(url=po_tkt_url,
+                                 headers=self.headers, params=parameters, verify=self.verify_ssl)
+            return resp.json()
+        except requests.exceptions.HTTPError as e:
+            print("Exception occurred while querying Policy Optimizer tickets with \n Exception : {1}".
+                  format(e.response.text))
+
+    def logout(self) -> list:
+        self.headers['Connection'] = 'Close'
+        pp_tkt_url = self.parser.get('REST', 'logout_api_url').format(self.host)
+        try:
+            resp = requests.post(url=pp_tkt_url, headers=self.headers, verify=self.verify_ssl)
+            return resp.status_code, resp.reason
+        except requests.exceptions.HTTPError as e:
+            print(
+                "Exception occurred while attempting to logout\n Exception : {0}".
+                    format(e.response.text))
+
     def get_workflow_packet_task_id(self, ticket_json: dict) -> str:
         """
         Retrieves workflowPacketTaskId value from current stage of provided ticket

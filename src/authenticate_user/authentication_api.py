@@ -24,7 +24,7 @@ class Authentication():
         wrapper.has_run = False
         return wrapper
 
-    @run_once
+    
     def get_auth_token(self):
         """ 
             User need to pass host, username, password, and verify_ssl as parameters while creating 
